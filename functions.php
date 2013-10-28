@@ -27,7 +27,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function test($description, $block) {
+function test($description, $block)
+{
     $test = new PhailSafe\Test($description, $block);
     echo $test->run()->cliOutput();
+}
+
+function test_group($description, $block)
+{
+    echo $description . PHP_EOL;
+    $block();
+    echo PHP_EOL;
 }
