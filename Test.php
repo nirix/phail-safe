@@ -51,12 +51,19 @@ class Test
 
     public function shouldEqual($should, $is)
     {
-        $result = ($should === $is);
-        $this->passed = $result;
-        if (!$result) {
-            $this->messages[] = "shouldEqual failed:";
-            $this->messages[] = "  should: {$should}";
-            $this->messages[] = "      is: {$is}";
+        $this->passed = ($should === $is);
+        if (!$this->passed) {
+            $this->messages[] = "  shouldEqual failed:";
+            $this->messages[] = "    should: {$should}";
+            $this->messages[] = "        is: {$is}";
+        }
+    }
+
+    public function assertTrue($result)
+    {
+        $this->passed = ($result === true);
+        if (!$this->passed) {
+            $this->messages[] = "  assertTrue failed";
         }
     }
 
