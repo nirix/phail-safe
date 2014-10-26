@@ -1,7 +1,7 @@
 <?php
-/**
+/*
  * Phail Safe
- * Copyright (c) 2013, J. Polgar
+ * Copyright (c) 2013-2014, J. Polgar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,52 +29,38 @@
 
 namespace PhailSafe;
 
-class Test
+/**
+ * Test Suite.
+ *
+ * @author J. Polgar
+ */
+class TestSuite
 {
-    protected $description;
-    protected $block;
-    protected $passed = false;
-    protected $messages = array();
+    /**
+     * @var Group[]
+     */
+    protected static $groups = [];
 
-    public function __construct($description, $block)
+    /**
+     *
+     */
+    public static function tests($block)
     {
-        $this->description = $description;
-        $this->block = $block;
+        $testSuite = new static;
+        $block($testSuite);
+
+        $testSuite->execute();
     }
 
-    public function run()
+    public static function group($name, $block)
     {
-        $block = $this->block;
-        $block($this);
-        return $this;
+        static::$groups[] = new Group($name, $block);
     }
 
-    public function shouldEqual($should, $is)
+    public static function execute()
     {
-        $this->passed = ($should === $is);
-        if (!$this->passed) {
-            $this->messages[] = "  shouldEqual failed:";
-            $this->messages[] = "    should: {$should}";
-            $this->messages[] = "        is: {$is}";
-        }
-    }
-
-    public function assertTrue($result)
-    {
-        $this->passed = ($result === true);
-        if (!$this->passed) {
-            $this->messages[] = "  assertTrue failed";
-        }
-    }
-
-    public function cliOutput()
-    {
-        print("{$this->description} => " . ($this->passed ? 'pass' : 'fail') . PHP_EOL);
-        if ($this->passed) {
-
-        } else {
-            print(implode(PHP_EOL, $this->messages));
-            print(PHP_EOL);
+        foreach (static::$groups as $group) {
+            $group->execute()->display();
         }
     }
 }
