@@ -1,0 +1,17 @@
+{
+    "name": "nirix/phail-safe",
+    "description": "A simple test framework",
+    "keywords": ["simple", "test", "framework"],
+    "license": "BSD",
+    "authors": [
+        {
+            "name": "Jack Polgar",
+            "email": "jack@polgar.id.au"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PhailSafe\\": "src/"
+        }
+    }
+}
