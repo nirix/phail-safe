@@ -1,7 +1,7 @@
 <?php
 /*
  * Phail Safe
- * Copyright (c) 2013-2014, J. Polgar
+ * Copyright (c) 2013-2016, J. Polgar
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,87 +29,156 @@
 
 namespace PhailSafe;
 
+use PhailSafe\TestSuite;
+use PhailSafe\Test;
+
 /**
  * Test Group.
  *
- * @author J. Polgar
+ * @package PhailSafe
+ * @author  J. Polgar
+ * @since   0.2.0
  */
 class Group
 {
     /**
-     * Group name.
-     *
      * @var string
      */
     protected $name;
 
     /**
-     * @var Test[]
+     * @var callable
+     */
+    protected $func;
+
+    /**
+     * @var TestSuite
+     */
+    protected $testSuite;
+
+    /**
+     * @var array
      */
     protected $tests = [];
 
     /**
-     * @var string[]
+     * @var integer
      */
-    protected $messages = [];
+    protected $testCount = 0;
 
     /**
-     * @param string   $name Group name.
-     * @param callable $block
+     * @var integer
      */
-    public function __construct($name, $block)
+    protected $assertionCount = 0;
+
+    /**
+     * @var integer
+     */
+    protected $failureCount = 0;
+
+    /**
+     * @var string   $name
+     * @var callable $func
+     */
+    public function __construct($name, callable $func)
     {
-        $this->name  = $name;
-        $this->block = $block;
+        $this->name = $name;
+        $this->func = $func;
     }
 
     /**
-     * Add test.
-     *
-     * @param string   $name Test name.
-     * @param callable $block
+     * @param TestSuite $testSuite
      */
-    public function test($name, $block)
+    public function setTestSuite(TestSuite $testSuite)
     {
-        $this->tests[] = new Test($name, $block);
+        $this->testSuite = $testSuite;
     }
 
     /**
-     * Execute tests.
-     *
-     * @return Group
+     * @return TestSuite
      */
-    public function execute()
+    public function getTestSuite()
     {
-        $block = $this->block;
-        $block($this);
+        return $this->testSuite;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTests()
+    {
+        return $this->tests;
+    }
+
+    /**
+     * Run the groups tests.
+     */
+    public function run()
+    {
+        $func = $this->func;
+        $func($this);
 
         foreach ($this->tests as $test) {
-            if (!$test->execute()) {
-                echo 'F';
-                $this->messages[] = $test->output();
+            if ($this->testSuite->codeCoverageEnabled()) {
+                $this->testSuite->getCodeCoverage()->start($this->name . ' / ' . $test->getName());
+                $test->run();
+                $this->testSuite->getCodeCoverage()->stop();
             } else {
-                echo '.';
+                $test->run();
             }
+
+            $this->failureCount = $this->failureCount + $test->getFailureCount();
+            $this->assertionCount = $this->assertionCount + $test->getAssertionCount();
         }
-
-        echo PHP_EOL;
-
-        return $this;
     }
 
     /**
-     * Display test messages.
+     * Create a new test.
+     *
+     * @param string   $name
+     * @param callable $func
+     *
+     * @return Test
      */
-    public function display()
+    public function test($name, callable $func)
     {
-        if (!count($this->messages)) {
-            return;
-        }
+        $this->testCount = $this->testCount + 1;
 
-        echo PHP_EOL . $this->name . PHP_EOL;
-        foreach ($this->messages as $message) {
-            echo " - {$message}" . PHP_EOL;
-        }
+        $test = new Test($name, $func);
+        $test->setGroup($this);
+        $this->tests[] = $test;
+        return $test;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTestCount()
+    {
+        return $this->testCount;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getAssertionCount()
+    {
+        return $this->assertionCount;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getFailureCount()
+    {
+        return $this->failureCount;
     }
 }

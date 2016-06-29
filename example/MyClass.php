@@ -6,4 +6,14 @@ class MyClass
     {
         return "[{$text}]";
     }
+
+    public function getTrue()
+    {
+        return true;
+    }
+
+    public function getFalse()
+    {
+        return false;
+    }
 }
