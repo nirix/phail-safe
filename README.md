@@ -1,6 +1,7 @@
 # PhailSafe
 
-PhailSafe is a simple little testing framework.
+PhailSafe is a simple little testing framework. It's the base of the [Avalon Testing][1]
+package, much of which has been backported into PhailSafe.
 
 ## How do I use this thing?
 
@@ -29,3 +30,5 @@ There's a small example in the `example` directory.
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+[1]: https://github.com/avalonphp/testing
